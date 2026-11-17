@@ -1,0 +1,11 @@
+const $=id=>document.getElementById(id);
+$("date").textContent=new Date().toLocaleDateString("mr-IN",{weekday:"long",year:"numeric",month:"long",day:"numeric"})+" | गोवा";
+$("year").textContent=new Date().getFullYear();
+let allNews=[];
+function esc(s=""){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function card(n){return `<article class="card">${n.image_url?`<img src="${esc(n.image_url)}" alt="${esc(n.title)}" loading="lazy">`:`<div style="height:145px;background:linear-gradient(135deg,#71899a,#2d4354);display:grid;place-items:center;color:white">${esc(n.category||"गोमंतभूमी")}</div>`}<div class="cardbody"><span class="cat">${esc(n.category)}</span><h3><a href="/article.html?slug=${encodeURIComponent(n.slug)}">${esc(n.title)}</a></h3><p>${esc(n.summary||"")}</p><span class="date">${esc(n.published_at||"")}</span></div></article>`;}
+async function loadNews(){try{let r=await fetch("/api/news");if(!r.ok)throw new Error("API");allNews=await r.json();render(allNews);}catch(e){$("newsGrid").innerHTML='<p class="muted">बातम्या लोड होऊ शकल्या नाहीत. कृपया थोड्या वेळाने पुन्हा प्रयत्न करा.</p>';}}
+function render(items){$("count").textContent=items.length+" बातम्या";$("newsGrid").innerHTML=items.length?items.map(card).join(""):'<p class="muted">अद्याप बातम्या प्रकाशित झालेल्या नाहीत.</p>';$("featured").innerHTML=items.slice(0,5).map(n=>`<div class="feature-item"><b><a href="/article.html?slug=${encodeURIComponent(n.slug)}">${esc(n.title)}</a></b><span class="date">${esc(n.category)} • ${esc(n.published_at||"")}</span></div>`).join("")||'<p class="muted">लवकरच बातम्या प्रकाशित होतील.</p>';$("videoGrid").innerHTML=items.filter(n=>n.video_url).slice(0,3).map(n=>`<div class="video"><a href="${esc(n.video_url)}" target="_blank" rel="noopener">▶ ${esc(n.title)}</a></div>`).join("")||'<p class="muted">व्हिडिओ लिंक असलेल्या बातम्या येथे दिसतील.</p>';}
+function search(){let q=$("search").value.trim().toLocaleLowerCase("mr");render(allNews.filter(n=>(n.title+" "+n.summary+" "+n.content+" "+n.category).toLocaleLowerCase("mr").includes(q)));}
+$("searchBtn").addEventListener("click",search);$("search").addEventListener("keydown",e=>{if(e.key==="Enter")search();});
+loadNews();
