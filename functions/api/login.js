@@ -1,0 +1,2 @@
+import {makeCookie,json,clearCookie,isAdmin} from "./_auth.js";
+export async function onRequestPost({request,env}){try{const {password}=await request.json();if(!env.ADMIN_PASSWORD||!env.SESSION_SECRET)return json({error:"Admin secrets सेट केलेले नाहीत."},503);if(typeof password!=="string"||password!==env.ADMIN_PASSWORD)return json({error:"पासवर्ड चुकीचा आहे."},401);return json({ok:true},200,{ "set-cookie":await makeCookie(env.SESSION_SECRET)});}catch{return json({error:"अवैध विनंती."},400)}}
