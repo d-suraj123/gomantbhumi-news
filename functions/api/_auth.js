@@ -1,4 +1,4 @@
-const COOKIE="gb_admin_v3";
+const COOKIE="gb_admin_v4";
 const enc=s=>new TextEncoder().encode(s);
 function b64(bytes){let bin="";for(const x of new Uint8Array(bytes))bin+=String.fromCharCode(x);return btoa(bin).replace(/=/g,"").replace(/\+/g,"-").replace(/\//g,"_");}
 function unb64(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";return Uint8Array.from(atob(s),c=>c.charCodeAt(0));}
